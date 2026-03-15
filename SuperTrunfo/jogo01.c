@@ -41,7 +41,7 @@ int main() {
     printf("Digite o número de pontos turísticos da Cidade 2: ");
     scanf("%d", &pontosCidade2);
 
-    // Exibição dos dados das cidades
+    // Exibição dos dados da cidade 1
     printf("\nCarta 1:\n");
     printf("Estado: %c\n", estadoCidade1);
     printf("Código: %s\n", codigoCidade1);
@@ -51,6 +51,7 @@ int main() {
     printf("PIB: %.2f bilhões\n", PIBCidade1);
     printf("Pontos turísticos: %d\n", pontosCidade1);
 
+    // Exibição dos dados da cidade 2
     printf("\nCarta 2:\n");
     printf("Estado: %c\n", estadoCidade2);
     printf("Código: %s\n", codigoCidade2);

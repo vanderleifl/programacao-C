@@ -1,0 +1,29 @@
+# Build
+build/
+bin/
+dist/
+
+# Objetos
+*.o
+*.obj
+
+# Bibliotecas
+*.so
+*.a
+*.dylib
+
+# Executáveis
+*.exe
+*.out
+
+# Debug
+*.dSYM/
+
+# Logs
+*.log
+
+# macOS
+.DS_Store
+
+# VS Code
+.vscode/

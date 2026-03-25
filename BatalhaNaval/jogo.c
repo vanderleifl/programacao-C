@@ -1,7 +1,23 @@
-// Nível Aventureiro - Expansão do Tabuleiro e Posicionamento Diagonal
-// Sugestão: Expanda o tabuleiro para uma matriz 10x10.
-// Sugestão: Posicione quatro navios no tabuleiro, incluindo dois na diagonal.
-// Sugestão: Exiba o tabuleiro completo no console, mostrando 0 para posições vazias e 3 para posições ocupadas.
+// Nível Mestre - Habilidades Especiais com Matrizes
+// Sugestão: Crie matrizes para representar habilidades especiais como cone, cruz, e octaedro.
+// Sugestão: Utilize estruturas de repetição aninhadas para preencher as áreas afetadas por essas habilidades no tabuleiro.
+// Sugestão: Exiba o tabuleiro com as áreas afetadas, utilizando 0 para áreas não afetadas e 1 para áreas atingidas.
+
+// Exemplos de exibição das habilidades:
+// Exemplo para habilidade em cone:
+// 0 0 1 0 0
+// 0 1 1 1 0
+// 1 1 1 1 1
+    
+// Exemplo para habilidade em octaedro:
+// 0 0 1 0 0
+// 0 1 1 1 0
+// 0 0 1 0 0
+
+// Exemplo para habilidade em cruz:
+// 0 0 1 0 0
+// 1 1 1 1 1
+// 0 0 1 0 0
 
 #include <stdio.h>
 
@@ -11,6 +27,7 @@
 #define VERTICAL 1
 #define DIAGONAL 3
 #define DIAGONAL_SECUNDARIA 4
+#define ALCANCE_HABILIDADE 5
 
 void InicializarTabuleiro(int tabuleiro[LINHAS][COLUNAS])
 {
@@ -143,16 +160,123 @@ void AjustarCoordenadasParaIndiceZero(int coord[2])
     coord[1]--;
 }
 
+void PreencherCone(int cone[ALCANCE_HABILIDADE][ALCANCE_HABILIDADE])
+{
+    int meio = (ALCANCE_HABILIDADE / 2);
+    
+    for (int l = 0; l < ALCANCE_HABILIDADE; l++)
+    {
+        int ciH = meio - l;
+        int cfH = meio + l; 
+        for (int c = 0; c < ALCANCE_HABILIDADE; c++)
+        {
+            if (l >= 0 && l <= meio && c >= ciH && c <= cfH)
+            {
+                cone[l][c] = 1;
+            }
+            else
+            {
+                cone[l][c] = 0;
+            }
+        }
+    }
+}
+
+void PreencherCruz(int cruz[ALCANCE_HABILIDADE][ALCANCE_HABILIDADE])
+{
+    int meio = (ALCANCE_HABILIDADE / 2);
+
+    for (int l = 0; l < ALCANCE_HABILIDADE; l++)
+    {
+        for (int c = 0; c < ALCANCE_HABILIDADE; c++)
+        {
+            if (l == meio || c == meio)
+            {
+                cruz[l][c] = 1;
+            }
+            else
+            {
+                cruz[l][c] = 0;
+            }
+        }
+    }
+}
+
+void PreencherOctaedro(int octaedro[ALCANCE_HABILIDADE][ALCANCE_HABILIDADE])
+{
+    int meio = (ALCANCE_HABILIDADE / 2);
+    
+    for (int l = 0; l < ALCANCE_HABILIDADE; l++)
+    {
+        int ciH = meio - l;
+        int cfH = meio + l;
+        if (l > meio)
+        {
+            ciH = l - meio;
+            cfH = (ALCANCE_HABILIDADE - 1) - ciH;
+        }
+        for (int c = 0; c < ALCANCE_HABILIDADE; c++)
+        {
+            if (l >= 0 && c >= ciH && c <= cfH)
+            {
+                octaedro[l][c] = 1;
+            }
+            else
+            {
+                octaedro[l][c] = 0;
+            }
+        }
+    }
+}
+
+void UsarHabilidade(int tabuleiro[LINHAS][COLUNAS], int habilidade[ALCANCE_HABILIDADE][ALCANCE_HABILIDADE], int coord[2])
+{
+    // Encontrando o meio da habilidade (sem considerar o resto da divisão)
+    int meio = (ALCANCE_HABILIDADE / 2);
+
+    if (meio < 0 || meio >= LINHAS || meio >= COLUNAS)
+    {
+        // Se o ponto central estiver fora do tabuleiro, a habilidade não será usada
+        return;
+    }
+
+    // Encontrando as coordenadas do início da habilidade, a partir das coordenadas do meio
+    int linhaInicial = coord[0] - meio;
+    int colunaInicial = coord[1] - meio;
+
+    // Fazendo a varredura da habilidade
+    for (int lh = 0; lh < ALCANCE_HABILIDADE; lh++)
+    {
+        for (int ch = 0; ch < ALCANCE_HABILIDADE; ch++)
+        {
+            int valorH = habilidade[lh][ch];
+            if (valorH)
+            {
+                // Se o valor encontrado for diferente de zero
+                // vamos encontrar a coordenada correspondente no tabuleiro
+                // e inserir o valor de ação da habilidade
+                int linhaTabuleiro = linhaInicial + lh;
+                int colunaTabuleiro = colunaInicial + ch;
+                if (linhaTabuleiro >= 0 && colunaTabuleiro >= 0 && linhaTabuleiro < LINHAS && colunaTabuleiro < COLUNAS)
+                {
+                    // Apenas se a coordenada atual estiver dentro do tabuleiro
+                    tabuleiro[linhaTabuleiro][colunaTabuleiro] = valorH;
+                }
+            }
+        }
+    }
+}
+
 int main() {
-    // 1. Criar o tabuleiro 10x10 e inicializar todas as posições com o 
-    //    valor que representa água (0)
+    // Criar o tabuleiro 10x10 e inicializar todas as posições com o 
+    // valor que representa água (0)
     int tabuleiro[LINHAS][COLUNAS];
     InicializarTabuleiro(tabuleiro);
     
     printf("\n\n--- Batalha Naval ---\n\n");
     
-    // 2. Declarar os navios que serão representados por vetores de tamanho 3
-    //    e para cada navio, um vetor coordenadas com tamanho 2 para linha e coluna inicial
+    // Declarar os navios que serão representados por vetores de tamanho 3
+    // e para cada navio, um vetor coordenadas com tamanho 2 para linha e coluna inicial
     int navio1[3] = {3,3,3}; // Horizontal
     int coordN1[2];
     int navio2[3] = {3,3,3}; // Vertical
@@ -231,31 +355,55 @@ int main() {
         return 1; // saindo com código de erro
     }
 
-    // 3. Mostrar o tabuleiro preenchido na tela
+    // Mostrar o tabuleiro preenchido na tela
     MostrarTabuleiro(tabuleiro);
     
+    // Criar as matrizes de habilidades
+    // aqui vou considerar o mesmo valor para horizonal e vertical (quadrado)
+    int cone[ALCANCE_HABILIDADE][ALCANCE_HABILIDADE];
+    int cruz[ALCANCE_HABILIDADE][ALCANCE_HABILIDADE];
+    int octaedro[ALCANCE_HABILIDADE][ALCANCE_HABILIDADE];
+
+    // Coordenadas para cada habilidade
+    int coordCone[2];
+    int coordCruz[2];
+    int coordOctaedro[2];
+    coordCone[0] = 3;
+    coordCone[1] = 3;
+    coordCruz[0] = 2;
+    coordCruz[1] = 8;
+    coordOctaedro[0] = 7;
+    coordOctaedro[1] = 3;
+    
+    AjustarCoordenadasParaIndiceZero(coordCone);
+    AjustarCoordenadasParaIndiceZero(coordCruz);
+    AjustarCoordenadasParaIndiceZero(coordOctaedro);
+
+    // Preencher as habilidades
+    PreencherCone(cone);
+    PreencherCruz(cruz);
+    PreencherOctaedro(octaedro);
+
+    char enter;
+    printf("\nPressiona <enter> para usar o cone...");
+    scanf("%c", &enter);
+
+    UsarHabilidade(tabuleiro, cone, coordCone);
+    MostrarTabuleiro(tabuleiro);
+
+    printf("\nPressiona <enter> para usar a cruz...");
+    scanf("%c", &enter);
+
+    UsarHabilidade(tabuleiro, cruz, coordCruz);
+    MostrarTabuleiro(tabuleiro);
+
+    printf("\nPressiona <enter> para usar o octaedro...");
+    scanf("%c", &enter);
+
+    UsarHabilidade(tabuleiro, octaedro, coordOctaedro);
+    MostrarTabuleiro(tabuleiro);
+
     printf("\n\n");
-    
-    // Nível Mestre - Habilidades Especiais com Matrizes
-    // Sugestão: Crie matrizes para representar habilidades especiais como cone, cruz, e octaedro.
-    // Sugestão: Utilize estruturas de repetição aninhadas para preencher as áreas afetadas por essas habilidades no tabuleiro.
-    // Sugestão: Exiba o tabuleiro com as áreas afetadas, utilizando 0 para áreas não afetadas e 1 para áreas atingidas.
-
-    // Exemplos de exibição das habilidades:
-    // Exemplo para habilidade em cone:
-    // 0 0 1 0 0
-    // 0 1 1 1 0
-    // 1 1 1 1 1
-    
-    // Exemplo para habilidade em octaedro:
-    // 0 0 1 0 0
-    // 0 1 1 1 0
-    // 0 0 1 0 0
-
-    // Exemplo para habilidade em cruz:
-    // 0 0 1 0 0
-    // 1 1 1 1 1
-    // 0 0 1 0 0
 
     return 0;
 }
